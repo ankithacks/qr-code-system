@@ -1,7 +1,7 @@
 class Api::V1::Admin::CatalogItemsController < ApplicationController
   before_action :authenticate_admin
   before_action :set_store
-  before_action :set_catalog_item, only: [:show, :update, :destroy]
+  before_action :set_catalog_item, only: [:update, :destroy]  
 
   def index
     items = @store.catalog_items.includes(:reviews, :purchases)
@@ -48,10 +48,14 @@ class Api::V1::Admin::CatalogItemsController < ApplicationController
 
   def set_store
     @store = current_admin.stores.find(params[:store_id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Store not found' }, status: :not_found
   end
 
   def set_catalog_item
     @catalog_item = @store.catalog_items.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Catalog item not found' }, status: :not_found
   end
 
   def catalog_item_params

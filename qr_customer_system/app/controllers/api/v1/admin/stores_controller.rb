@@ -20,22 +20,23 @@ class Api::V1::Admin::StoresController < ApplicationController
   end
 
   def show
-    render json: {
-      id: @store.id,
-      name: @store.name,
-      description: @store.description,
-      address: @store.address,
-      phone: @store.phone,
-      email: @store.email,
-      qr_codes: @store.qr_codes.active.map { |qr|
-        {
-          id: qr.id,
-          code: qr.code,
-          scan_url: "#{request.base_url}/scan/#{qr.code}"
-        }
-      }
-    }
-  end
+  latest_qr_code = @store.qr_codes.order(created_at: :desc).first
+
+  render json: {
+    id: @store.id,
+    name: @store.name,
+    description: @store.description,
+    address: @store.address,
+    phone: @store.phone,
+    email: @store.email,
+    qr_codes: latest_qr_code.present? ? [{
+      id: latest_qr_code.id,
+      code: latest_qr_code.code,
+      scan_url: "#{request.base_url}/scan/#{latest_qr_code.code}"
+    }] : []
+  }
+end
+
 
   def create
     store = current_admin.stores.build(store_params)

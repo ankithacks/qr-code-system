@@ -6,7 +6,8 @@ class Admin < ApplicationRecord
   validates :name, presence: true
 
   def generate_jwt_token
-    payload = { admin_id: id, exp: 24.hours.from_now.to_i }
-    JWT.encode(payload, Rails.application.secret_key_base)
+    payload = { admin_id: id, exp: 7.days.from_now.to_i }
+    secret_key = Rails.application.credentials.secret_key_base || ENV['SECRET_KEY_BASE']
+    JWT.encode(payload, secret_key, 'HS256')
   end
 end
