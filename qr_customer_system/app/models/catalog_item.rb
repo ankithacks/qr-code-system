@@ -9,4 +9,5 @@ class CatalogItem < ApplicationRecord
 
   scope :with_offers, -> { where.not(offer_price: nil) }
   scope :by_store, ->(store_id) { where(store_id: store_id) }
+  scope :active, -> { where(active: true) }  
 end

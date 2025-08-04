@@ -7,6 +7,7 @@ class Customer < ApplicationRecord
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :phone, presence: true
   validates :name, presence: true
+  has_secure_password  
 
   def self.authenticate_otp(email, otp)
     # Fake OTP system - in real implementation, you'd verify against sent OTP

@@ -27,8 +27,9 @@ Rails.application.routes.draw do
       namespace :customer do
         # Authentication
         post '/stores/:store_id/auth/register', to: 'auth#register'
-        post '/auth/verify_otp', to: 'auth#verify_otp'
-        post '/auth/send_otp', to: 'auth#send_otp'
+        post '/stores/:store_id/auth/verify_otp', to: 'auth#verify_otp'
+        post '/stores/:store_id/auth/send_otp', to: 'auth#send_otp'
+        post '/auth/login', to: 'auth#login'
         
         # Catalog browsing
         get '/stores/:store_id/catalog', to: 'catalog#index'
