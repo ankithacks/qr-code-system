@@ -30,3 +30,21 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+
+# Ignore Rails temp/cache
+qr_customer_system/log/*
+qr_customer_system/tmp/*
+!qr_customer_system/tmp/.keep
+!qr_customer_system/log/.keep
+
+# Ignore database files
+qr_customer_system/storage/*.sqlite3
+
+# Ignore schema/migrations
+qr_customer_system/db/schema.rb
+qr_customer_system/db/migrate/
+
+# Ignore any local uploads, cache
+qr_customer_system/storage/*
+!qr_customer_system/storage/.keep
