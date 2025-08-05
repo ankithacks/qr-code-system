@@ -1,85 +1,118 @@
-class Api::V1::Admin::AnalyticsController < ApplicationController
+class Api::V1::Admin::StoresController < ApplicationController
   before_action :authenticate_admin
-  before_action :set_store
+  before_action :set_store, only: [:show, :update, :destroy]
 
-  def customers
-    customers = @store.customers.includes(:customer_interactions, :reviews, :purchases)
+  def index
+    stores = current_admin.stores.includes(:catalog_items, :customers, :qr_codes)
+    render json: stores.map { |store|
+      latest_qr_code = store.qr_codes.order(created_at: :desc).first
+      {
+        id: store.id,
+        name: store.name,
+        description: store.description,
+        address: store.address,
+        phone: store.phone,
+        email: store.email,
+        catalog_items_count: store.catalog_items.count,
+        customers_count: store.customers.count,
+        created_at: store.created_at,
+        qr_codes: latest_qr_code.present? ? [{
+          id: latest_qr_code.id,
+          code: latest_qr_code.code,
+          scan_url: "#{request.base_url}/scan/#{latest_qr_code.code}"
+        }] : []
+      }
+    }
+  end
+
+  def show
+    latest_qr_code = @store.qr_codes.order(created_at: :desc).first
+
+    render json: {
+      id: @store.id,
+      name: @store.name,
+      description: @store.description,
+      address: @store.address,
+      phone: @store.phone,
+      email: @store.email,
+      catalog_items_count: @store.catalog_items.count,
+      customers_count: @store.customers.count,
+      created_at: @store.created_at,
+      qr_codes: latest_qr_code.present? ? [{
+        id: latest_qr_code.id,
+        code: latest_qr_code.code,
+        scan_url: "#{request.base_url}/scan/#{latest_qr_code.code}"
+      }] : []
+    }
+  end
+
+  def create
+    store = current_admin.stores.build(store_params)
     
-    render json: {
-      total_customers: customers.count,
-      verified_customers: customers.where(verified: true).count,
-      customers: customers.recent.limit(50).map { |customer|
-        {
-          id: customer.id,
-          name: customer.name,
-          email: customer.email,
-          phone: customer.phone,
-          verified: customer.verified,
-          interactions_count: customer.customer_interactions.count,
-          reviews_count: customer.reviews.count,
-          purchases_count: customer.purchases.count,
-          joined_at: customer.created_at
+    if store.save
+      # Generate initial QR code
+      qr_code = store.generate_qr_code
+      
+      render json: {
+        message: 'Store created successfully',
+        store: {
+          id: store.id,
+          name: store.name,
+          description: store.description,
+          address: store.address,
+          phone: store.phone,
+          email: store.email,
+          qr_codes: [{
+            id: qr_code.id,
+            code: qr_code.code,
+            scan_url: "#{request.base_url}/scan/#{qr_code.code}"
+          }]
         }
-      }
-    }
+      }, status: :created
+    else
+      render json: { errors: store.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
-  def interactions
-    interactions = @store.customers.joins(:customer_interactions)
-                        .includes(:customer_interactions => :catalog_item)
-                        .flat_map(&:customer_interactions)
-                        .sort_by(&:created_at).reverse
-                        .first(100)
-
-    render json: {
-      total_interactions: @store.customers.joins(:customer_interactions).count,
-      recent_interactions: interactions.map { |interaction|
-        {
-          id: interaction.id,
-          customer_name: interaction.customer.name,
-          interaction_type: interaction.interaction_type,
-          catalog_item: interaction.catalog_item&.name,
-          timestamp: interaction.created_at,
-          metadata: interaction.metadata
+  def update
+    if @store.update(store_params)
+      render json: { 
+        message: 'Store updated successfully', 
+        store: {
+          id: @store.id,
+          name: @store.name,
+          description: @store.description,
+          address: @store.address,
+          phone: @store.phone,
+          email: @store.email,
+          qr_codes: @store.qr_codes.order(created_at: :desc).first&.then { |qr|
+            [{
+              id: qr.id,
+              code: qr.code,
+              scan_url: "#{request.base_url}/scan/#{qr.code}"
+            }]
+          } || []
         }
       }
-    }
+    else
+      render json: { errors: @store.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
-  def reviews
-    reviews = @store.catalog_items.joins(:reviews)
-                   .includes(reviews: [:customer, :review_answers])
-                   .flat_map(&:reviews)
-                   .sort_by(&:created_at).reverse
-                   .first(50)
-
-    render json: {
-      total_reviews: @store.catalog_items.joins(:reviews).count,
-      average_rating: Review.joins(catalog_item: :store)
-                           .where(stores: { id: @store.id })
-                           .average(:overall_rating)&.round(2) || 0,
-      recent_reviews: reviews.map { |review|
-        {
-          id: review.id,
-          customer_name: review.customer.name,
-          catalog_item: review.catalog_item.name,
-          overall_rating: review.overall_rating,
-          comment: review.comment,
-          answers: review.review_answers.map { |answer|
-            {
-              question: answer.review_question.question,
-              answer: answer.answer
-            }
-          },
-          created_at: review.created_at
-        }
-      }
-    }
+  def destroy
+    @store.destroy
+    render json: { message: 'Store deleted successfully' }
   end
 
   private
 
   def set_store
-    @store = current_admin.stores.find(params[:store_id])
+    @store = current_admin.stores.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Store not found' }, status: :not_found
+  end
+
+  def store_params
+    params.require(:store).permit(:name, :description, :address, :phone, :email)
   end
 end
