@@ -15,27 +15,38 @@ import CatalogManagement from "./pages/admin/CatalogManagement";
 import ReviewManagement from "./pages/admin/ReviewManagement";
 import Analytics from "./pages/admin/Analytics";
 import ScanQRPage from "./pages/customer/ScanQRPage";
+import CustomerCatalogPage from "./pages/customer/CustomerCatalogPage";
+import CustomerReviewPage from "./pages/customer/CustomerReviewPage";
 
 // Create Auth Context
 const AuthContext = createContext();
 
 function App() {
-  const [authState, setAuthState] = useState({
-    isAuthenticated: false,
-    admin: null,
-    token: null,
+  const [authState, setAuthState] = useState(() => {
+    // Check localStorage for existing auth data
+    const storedAuth = localStorage.getItem("adminAuth");
+    return storedAuth
+      ? JSON.parse(storedAuth)
+      : {
+          isAuthenticated: false,
+          admin: null,
+          token: null,
+        };
   });
 
   const login = (adminData, token) => {
-    setAuthState({
+    const newAuthState = {
       isAuthenticated: true,
       admin: adminData,
       token: token,
-    });
+    };
+    setAuthState(newAuthState);
+    // Store auth data in localStorage
+    localStorage.setItem("adminAuth", JSON.stringify(newAuthState));
   };
 
   const logout = () => {
-    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminAuth");
     setAuthState({
       isAuthenticated: false,
       admin: null,
@@ -43,7 +54,7 @@ function App() {
     });
   };
 
-  // Protected Route Component (for admin routes)
+  // Protected Route Component
   const ProtectedRoute = ({ children }) => {
     if (!authState.isAuthenticated) {
       return <Navigate to="/admin/login" replace />;
@@ -55,10 +66,10 @@ function App() {
     <AuthContext.Provider value={{ ...authState, login, logout }}>
       <Router>
         <Routes>
-          {/* Customer-facing routes (no authentication required) */}
-          <Route path="/scan/:qr_code" element={<ScanQRPage />} />
-          
-          {/* Admin Routes (protected) */}
+          <Route path="/scan/:storeId" element={<ScanQRPage />} />
+          <Route path="/catalog/:storeId" element={<CustomerCatalogPage />} />
+          <Route path="/review/:storeId" element={<CustomerReviewPage />} />
+          {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/register" element={<AdminRegister />} />
 
