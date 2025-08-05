@@ -157,7 +157,7 @@ const ReviewManagement = () => {
           <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
             <h1 className="text-3xl font-bold text-gray-900">Review Questions</h1>
             <button
-              onClick={() => navigate(`/admin/stores/${store_id}`)}
+              onClick={() => navigate(`/admin/stores`)}
               className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
             >
               Back to Store

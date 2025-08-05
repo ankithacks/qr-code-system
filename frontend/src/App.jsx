@@ -17,6 +17,7 @@ import Analytics from "./pages/admin/Analytics";
 import ScanQRPage from "./pages/customer/ScanQRPage";
 import CustomerCatalogPage from "./pages/customer/CustomerCatalogPage";
 import CustomerReviewPage from "./pages/customer/CustomerReviewPage";
+import ProductDetailPage from "./pages/customer/ProductDetailPage";
 
 // Create Auth Context
 const AuthContext = createContext();
@@ -69,6 +70,7 @@ function App() {
           <Route path="/scan/:storeId" element={<ScanQRPage />} />
           <Route path="/catalog/:storeId" element={<CustomerCatalogPage />} />
           <Route path="/review/:storeId" element={<CustomerReviewPage />} />
+          <Route path="/catalog/:storeId/:catalogId" element={<ProductDetailPage />} />
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/register" element={<AdminRegister />} />

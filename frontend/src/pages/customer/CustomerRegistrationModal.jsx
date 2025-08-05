@@ -12,7 +12,7 @@ const CustomerRegistrationModal = ({ storeId, item, onSuccess, onClose }) => {
     password_confirmation: ''
   });
   const [otp, setOtp] = useState('');
-  const [displayedOtp, setDisplayedOtp] = useState(''); // OTP shown to user
+  const [displayedOtp, setDisplayedOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [customer, setCustomer] = useState(null);
@@ -34,7 +34,7 @@ const CustomerRegistrationModal = ({ storeId, item, onSuccess, onClose }) => {
         customer: formData
       });
       setCustomer(response.data.customer);
-      setDisplayedOtp(response.data.otp); // Display OTP from response
+      setDisplayedOtp(response.data.otp);
       setStep('verify');
     } catch (err) {
       setError(err.response?.data?.errors?.join(', ') || 'Registration failed');
