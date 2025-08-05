@@ -31,7 +31,7 @@ const AdminSidebar = () => {
                 Stores
               </NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink
                 to="/admin/catalog"
                 className={({ isActive }) =>
@@ -66,7 +66,7 @@ const AdminSidebar = () => {
               >
                 Analytics
               </NavLink>
-            </li>
+            </li> */}
           </ul>
         </nav>
       </div>

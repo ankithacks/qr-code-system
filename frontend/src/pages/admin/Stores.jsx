@@ -36,6 +36,18 @@ const StoresManagement = () => {
     fetchStores();
   }, []);
 
+  const handleViewCatalog = (storeId) => {
+    navigate(`/admin/catalog/${storeId}`);
+  };
+
+  const handleViewReviews = (storeId) => {
+    navigate(`/admin/reviews/${storeId}`);
+  };
+
+  const handleViewAnalytics = (storeId) => {
+    navigate(`/admin/analytics/${storeId}`);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -261,6 +273,9 @@ const StoresManagement = () => {
                     <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Manage
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -307,6 +322,27 @@ const StoresManagement = () => {
                             className="text-red-600 hover:text-red-900"
                           >
                             Delete
+                          </button>
+                        </td>
+
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <button
+                            onClick={() => handleViewCatalog(store.id)}
+                            className="text-indigo-600 hover:text-indigo-900 mr-4"
+                          >
+                            Catalog
+                          </button>
+                          <button
+                            onClick={() => handleViewReviews(store.id)}
+                            className="text-green-600 hover:text-green-900 mr-4"
+                          >
+                            Reviews
+                          </button>
+                          <button
+                            onClick={() => handleViewAnalytics(store.id)}
+                            className="text-purple-600 hover:text-purple-900"
+                          >
+                            Analytics
                           </button>
                         </td>
                       </tr>
