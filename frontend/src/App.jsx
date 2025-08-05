@@ -14,6 +14,7 @@ import StoresManagement from "./pages/admin/Stores";
 import CatalogManagement from "./pages/admin/CatalogManagement";
 import ReviewManagement from "./pages/admin/ReviewManagement";
 import Analytics from "./pages/admin/Analytics";
+import ScanQRPage from "./pages/customer/ScanQRPage";
 
 // Create Auth Context
 const AuthContext = createContext();
@@ -42,7 +43,7 @@ function App() {
     });
   };
 
-  // Protected Route Component
+  // Protected Route Component (for admin routes)
   const ProtectedRoute = ({ children }) => {
     if (!authState.isAuthenticated) {
       return <Navigate to="/admin/login" replace />;
@@ -54,7 +55,10 @@ function App() {
     <AuthContext.Provider value={{ ...authState, login, logout }}>
       <Router>
         <Routes>
-          {/* Admin Routes */}
+          {/* Customer-facing routes (no authentication required) */}
+          <Route path="/scan/:qr_code" element={<ScanQRPage />} />
+          
+          {/* Admin Routes (protected) */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/register" element={<AdminRegister />} />
 
