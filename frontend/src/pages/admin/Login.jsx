@@ -22,6 +22,7 @@ const AdminLogin = () => {
       });
 
       const { token, admin } = response.data;
+      localStorage.setItem('adminToken', token);
       login(admin, token);
       navigate('/admin/dashboard');
     } catch (err) {
