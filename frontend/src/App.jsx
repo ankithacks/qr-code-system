@@ -15,6 +15,7 @@ import CatalogManagement from "./pages/admin/CatalogManagement";
 import ReviewManagement from "./pages/admin/ReviewManagement";
 import Analytics from "./pages/admin/Analytics";
 import ScanQRPage from "./pages/customer/ScanQRPage";
+import CustomerCatalogPage from "./pages/customer/CustomerCatalogPage";
 
 // Create Auth Context
 const AuthContext = createContext();
@@ -43,7 +44,7 @@ function App() {
     });
   };
 
-  // Protected Route Component (for admin routes)
+  // Protected Route Component
   const ProtectedRoute = ({ children }) => {
     if (!authState.isAuthenticated) {
       return <Navigate to="/admin/login" replace />;
@@ -55,10 +56,9 @@ function App() {
     <AuthContext.Provider value={{ ...authState, login, logout }}>
       <Router>
         <Routes>
-          {/* Customer-facing routes (no authentication required) */}
-          <Route path="/scan/:qr_code" element={<ScanQRPage />} />
-          
-          {/* Admin Routes (protected) */}
+          <Route path="/scan/:storeId" element={<ScanQRPage />} />
+          <Route path="/catalog/:storeId" element={<CustomerCatalogPage />} />
+          {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/register" element={<AdminRegister />} />
 
@@ -110,6 +110,7 @@ function App() {
           {/* Default Redirect */}
           <Route path="/" element={<Navigate to="/admin/login" replace />} />
           <Route path="*" element={<div>404 Not Found</div>} />
+          
         </Routes>
       </Router>
     </AuthContext.Provider>
