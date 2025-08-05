@@ -10,16 +10,17 @@ class ApplicationController < ActionController::API
   end
 
   def authenticate_admin
-    token = request.headers['Authorization']&.split(' ')&.last
-    return render json: { error: 'Unauthorized' }, status: :unauthorized unless token
+  token = request.headers['Authorization']&.split(' ')&.last
+  return render json: { error: 'Unauthorized' }, status: :unauthorized unless token
 
-    begin
-      decoded_token = JWT.decode(token, Rails.application.secret_key_base)
-      @current_admin = Admin.find(decoded_token[0]['admin_id'])
-    rescue JWT::DecodeError, ActiveRecord::RecordNotFound
-      render json: { error: 'Unauthorized' }, status: :unauthorized
-    end
+  begin
+    secret = ENV['JWT_SECRET_KEY'] || Rails.application.credentials.secret_key_base
+    decoded_token = JWT.decode(token, secret)[0]
+    @current_admin = Admin.find(decoded_token['admin_id'])
+  rescue JWT::DecodeError, ActiveRecord::RecordNotFound
+    render json: { error: 'Unauthorized' }, status: :unauthorized
   end
+end
 
   def current_admin
     @current_admin
