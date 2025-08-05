@@ -20,24 +20,23 @@ class Api::V1::Admin::StoresController < ApplicationController
   end
 
   def show
-  latest_qr_code = @store.qr_codes.order(created_at: :desc).first
+    latest_qr_code = @store.qr_codes.order(created_at: :desc).first
 
-  render json: {
-    id: @store.id,
-    name: @store.name,
-    description: @store.description,
-    address: @store.address,
-    phone: @store.phone,
-    email: @store.email,
-    qr_codes: latest_qr_code.present? ? [{
-      id: latest_qr_code.id,
-      code: latest_qr_code.code,
-      # scan_url: "#{request.base_url}/scan/#{latest_qr_code.code}"
-      scan_url: "http://localhost:5173/scan/#{latest_qr_code.code}"
-    }] : []
-  }
-end
-
+    render json: {
+      id: @store.id,
+      name: @store.name,
+      description: @store.description,
+      address: @store.address,
+      phone: @store.phone,
+      email: @store.email,
+      qr_codes: latest_qr_code.present? ? [{
+        id: latest_qr_code.id,
+        code: latest_qr_code.code,
+        # Use the top-level scan route - this matches your routes.rb
+        scan_url: "#{request.base_url}/scan/#{latest_qr_code.code}"
+      }] : []
+    }
+  end
 
   def create
     store = current_admin.stores.build(store_params)
@@ -55,7 +54,9 @@ end
           address: store.address,
           qr_code: {
             code: qr_code.code,
-            scan_url: "http://localhost:5173/scan/#{qr_code.code}"
+            # Use the top-level scan route - this matches your routes.rb
+            # scan_url: "#{request.base_url}/scan/#{qr_code.code}"
+            scan_url: "http://localhost:5173/scan/#{store.id}"
           }
         }
       }, status: :created

@@ -1,6 +1,6 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  # QR Code scanning endpoint
+  # QR Code scanning endpoint (top-level for simple access)
   get '/scan/:qr_code', to: 'api/v1/customer/scan#scan'
 
   namespace :api do
@@ -25,6 +25,9 @@ Rails.application.routes.draw do
 
       # Customer routes
       namespace :customer do
+        # Add the scan route here too
+        get '/scan/:qr_code', to: 'scan#scan'
+        
         # Authentication
         post '/stores/:store_id/auth/register', to: 'auth#register'
         post '/stores/:store_id/auth/verify_otp', to: 'auth#verify_otp'
