@@ -32,7 +32,8 @@ class Api::V1::Admin::StoresController < ApplicationController
     qr_codes: latest_qr_code.present? ? [{
       id: latest_qr_code.id,
       code: latest_qr_code.code,
-      scan_url: "#{request.base_url}/scan/#{latest_qr_code.code}"
+      # scan_url: "#{request.base_url}/scan/#{latest_qr_code.code}"
+      scan_url: "http://localhost:5173/scan/#{latest_qr_code.code}"
     }] : []
   }
 end
@@ -54,7 +55,7 @@ end
           address: store.address,
           qr_code: {
             code: qr_code.code,
-            scan_url: "#{request.base_url}/scan/#{qr_code.code}"
+            scan_url: "http://localhost:5173/scan/#{qr_code.code}"
           }
         }
       }, status: :created
