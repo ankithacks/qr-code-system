@@ -14,7 +14,10 @@ class Api::V1::Admin::StoresController < ApplicationController
         email: store.email,
         catalog_items_count: store.catalog_items.count,
         customers_count: store.customers.count,
-        created_at: store.created_at
+        created_at: store.created_at,
+        qr_code: {
+          scan_url: "http://localhost:5173/scan/#{store.id}"
+        }
       }
     }
   end
