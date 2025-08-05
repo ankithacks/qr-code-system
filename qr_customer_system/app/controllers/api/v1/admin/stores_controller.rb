@@ -55,7 +55,7 @@ end
           address: store.address,
           qr_code: {
             code: qr_code.code,
-            scan_url: "#{request.base_url}/scan/#{qr_code.code}"
+            scan_url: "http://localhost:5173/scan/#{qr_code.code}"
           }
         }
       }, status: :created
